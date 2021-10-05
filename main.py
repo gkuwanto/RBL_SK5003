@@ -3,6 +3,8 @@ import numpy as np
 
 from lib.file_parser import read_csv
 
+# Set random seed
+np.random.seed(42)
 
 # Menambahkan argumen dalam cli
 parser = argparse.ArgumentParser()
