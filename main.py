@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 
 from lib.file_parser import read_csv
 
@@ -31,6 +32,20 @@ for col in headers:
 
 
 # TODO: One Hot Encode zipcode
+def onehotencode(data, col):
+    key = np.unique(np.array(data[col]))
+    inspect = data[col]
+    value = [[0 for i in range(len(inspect))] for i in range(len(key))]
+    mydict = dict(zip(key, value))
+    for i in key:
+        for j in range(len(inspect)):
+            if inspect[j] == i:
+                mydict[i][j] = 1
+    del data[col]
+    return {**data, **mydict}
+
+data_train = onehotencode(data_train, 'zipcode')
+data_test = onehotencode(data_test, 'zipcode')
 
 # Membaca Data menjadi format numpy
 X_train = np.array([data_train[col] for col in headers 
@@ -90,3 +105,17 @@ with open('data/prediction.csv', 'w+') as f:
     f.write('id,price\n')
     for id, price in zip(data_test['id'], y_pred):
         f.write(f'{id},{price}\n')
+
+X_headers = [col for col in headers 
+    if col not in ['date', 'id', 'price', 'zipcode']]
+
+y = y_train
+for i in range(len(X_headers)):
+    x = []
+    for j in range(len(X_train)):
+        x.append(X_train[j][i])
+    plt.figure()
+    plt.scatter(x, y)
+    plt.xlabel(X_headers[i])
+    plt.ylabel('price')
+    plt.savefig(X_headers[i] + ' to price.png')
