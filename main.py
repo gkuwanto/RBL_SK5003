@@ -112,9 +112,18 @@ with open('data/prediction.csv', 'w+') as f:
 
 # TODO: Evaluate Result
 # Read Prediction
-# Read True Label
-# Print MSE / MAE
+prediction = read_csv('data/prediction.csv')
+price_pred = np.array(prediction['price']).astype(np.float)
 
+# Read True Label
+true_label = read_csv('data/test_true_price.csv')
+price_true = np.array(true_label['price']).astype(np.float)
+
+# Print MSE / MAE
+MSE_result = np.mean((price_true - price_pred) ** 2)
+MAE_result = np.mean(np.abs(price_true - price_pred))
+print("MSE :", MSE_result)
+print("MAE :", MAE_result)
 
 X_headers = [col for col in headers
              if col not in ['date', 'id', 'price', 'zipcode']]
