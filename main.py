@@ -113,11 +113,11 @@ with open('data/prediction.csv', 'w+') as f:
 # TODO: Evaluate Result
 # Read Prediction
 prediction = read_csv('data/prediction.csv')
-price_pred = np.array(prediction['price']).astype(np.float)
+price_pred = np.array(prediction['price']).astype(float)
 
 # Read True Label
 true_label = read_csv('data/test_true_price.csv')
-price_true = np.array(true_label['price']).astype(np.float)
+price_true = np.array(true_label['price']).astype(float)
 
 # Print MSE / MAE
 MSE_result = np.mean((price_true - price_pred) ** 2)
