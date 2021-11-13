@@ -43,11 +43,12 @@ def onehotencode(data, col):
             if inspect[j] == i:
                 mydict[i][j] = 1
     del data[col]
-    return {**data, **mydict}
+    return {**data, **mydict}, key
 
 
-data_train = onehotencode(data_train, 'zipcode')
-data_test = onehotencode(data_test, 'zipcode')
+data_train, key = onehotencode(data_train, 'zipcode')
+data_test, _ = onehotencode(data_test, 'zipcode')
+headers = list(headers) + list(key)
 
 # Membaca Data menjadi format numpy
 X_train = np.array([data_train[col] for col in headers
@@ -148,7 +149,7 @@ for i in range(len(X_headers)):
     plt.plot(x, y_pred_mean, color='r', linewidth=1.5)
     plt.xlabel(X_headers[i])
     plt.ylabel('price')
-    plt.savefig(X_headers[i] + ' to price.png')
+    plt.savefig(str(X_headers[i]) + ' to price.png')
 
 plt.figure()
 plt.scatter(range(len(loss_epoch)), loss_epoch)
