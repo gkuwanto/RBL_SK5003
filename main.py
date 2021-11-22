@@ -10,7 +10,13 @@ np.random.seed(42)
 # Menambahkan argumen dalam cli
 parser = argparse.ArgumentParser()
 parser.add_argument("-obj", "--objective",
-                    help="Specify objective function of the optimization. Only MSE and MAE is available", default='MSE')
+                    help="Specify objective function of the optimization. "
+                            "Only MSE and MAE is available",
+                    default='MSE')
+parser.add_argument("-n_stop", "--n_stop",
+                    help="Specify number of epoch with no improvement "
+                    "as stopping criteria",
+                    default=5)
 args = parser.parse_args()
 
 # Memastikan Nilai input argument
@@ -80,10 +86,12 @@ elif args.objective == 'MAE':
 
 
 # Memulai Proses SGD
-n_epoch = 20
+n_epoch = 0
+stopping_criteria = False
 eta = 0.00005
 loss_epoch = []
-for epoch in range(n_epoch):
+while not stopping_criteria:
+    epoch = n_epoch
     total_loss = 0
     total_sample = len(y_train)
     random_seq = np.random.permutation(np.arange(total_sample))
@@ -93,6 +101,14 @@ for epoch in range(n_epoch):
         theta = theta - (eta*grad)
     loss_epoch.append(total_loss/total_sample)
     print(f"Epoch: {epoch} \t Loss: {total_loss/total_sample}")
+    if n_epoch > args.n_stop:
+        is_lower_count = 0
+        for i in range(-1, -1*args.n_stop, -1):
+            if (loss_epoch[i] - loss_epoch[i-1]) < -1e-5:
+                is_lower_count += 1
+        stopping_criteria = (is_lower_count == 0)
+    n_epoch += 1
+
 
 # Melakukan Preprocessing pada Dataset Test
 X_test = np.array([data_test[col] for col in headers
@@ -150,6 +166,7 @@ for i in range(len(X_headers)):
     plt.xlabel(X_headers[i])
     plt.ylabel('price')
     plt.savefig(str(X_headers[i]) + ' to price.png')
+    plt.close()
 
 plt.figure()
 plt.scatter(range(len(loss_epoch)), loss_epoch)
